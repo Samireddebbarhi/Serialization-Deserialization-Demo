@@ -1,27 +1,31 @@
 package org.example;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectOutputStream;
 
-public class SerializedDemo {
-    public static void main(String[] args) {
-        {
-            Employee emp = new Employee();
-            emp.name = "Samir";
-            emp.address = "123 Main St";
-            emp.age = 25;
-            emp.number = 123456789;
-        }
-        try{
-            FileOutputStream filOut= new FileOutputStream("employee.ser");
-            ObjectOutputStream objOut=new ObjectOutputStream(filOut);
-            objOut.writeObject(new Employee());
-            System.out.println("Serialized data is saved in employee.ser");
-            objOut.close();
-            filOut.close();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+public class SerializedDemo implements Runnable {
+    private final String fileName;
+    private final Employee employee;
+
+    public SerializedDemo(String fileName, Employee employee) {
+        this.fileName = fileName;
+        this.employee = employee;
     }
 
+    @Override
+    public void run() {
+        try (FileOutputStream fileOut = new FileOutputStream(fileName);
+             ObjectOutputStream objOut = new ObjectOutputStream(fileOut)) {
+
+            objOut.writeObject(employee);
+            System.out.println("Serialization completed and saved to: " + fileName);
+
+        } catch (IOException e) {
+            System.err.println("Serialization failed: " + e.getMessage());
+        }
+    }
 }
+
+
+
